@@ -88,11 +88,12 @@
     chatHistory.scrollTop = chatHistory.scrollHeight;
 
     try {
-        const response = await fetch("https://divya-chatbot-gfw1.onrender.com", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: query })
-        });
+        const response = await fetch("https://divya-chatbot-gfw1.onrender.com/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: query })
+});
+
 
         const data = await response.json();
         const reply = data.reply || "No response from AI";
@@ -107,4 +108,5 @@
     </script>
 </body>
 </html>
+
 

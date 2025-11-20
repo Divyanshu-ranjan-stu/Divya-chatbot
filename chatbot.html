@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: rgb(238, 175, 175);
+        }
+        #chat-history::-webkit-scrollbar { width: 8px; }
+        #chat-history::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+        .user-message { background-color: rgb(81, 81, 196); color: white; border-bottom-right-radius: 0; }
+        .ai-message { background-color: rgb(174, 240, 233); color: #1f2937; border-bottom-left-radius: 0; }
+    </style>
+</head>
+<body class="flex flex-col h-screen antialiased">
+
+    <div class="flex-grow flex flex-col max-w-4xl mx-auto w-full p-4 md:p-6">
+
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-extrabold text-Black">Divya Bot </h1>
+            <p class="text-black-500 mt-1">Your academic assistant powered by Divyanshu.</p>
+        </header>
+
+        <div id="chat-history" class="flex-grow overflow-y-auto space-y-4 p-4 mb-4 bg-white shadow-xl rounded-xl border border-gray-100">
+            <div class="flex justify-start">
+                <div class="ai-message p-3 rounded-xl max-w-xs md:max-w-md shadow-md">
+                    <p class="font-semibold text-sm">Chamatkar</p>
+                    <p class="mt-1">Hi there! I'm ready to help you with your studies. Ask me anything—from history to science!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-2xl border border-gray-100 flex items-center">
+            <input id="user-input"
+                type="text"
+                placeholder="Ask a question..."
+                class="flex-grow p-3 border border-gray-300 rounded-lg text-gray-700"
+                onkeydown="if(event.key === 'Enter') sendMessage()">
+
+            <button id="send-button"
+                onclick="sendMessage()"
+                class="ml-3 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
+                Send
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatHistory = document.getElementById("chat-history");
+        const userInput = document.getElementById("user-input");
+
+        function addMessage(role, text) {
+            const wrapper = document.createElement("div");
+            wrapper.className = `flex ${role === "user" ? "justify-end" : "justify-start"}`;
+
+            const bubble = document.createElement("div");
+            bubble.className = `${role}-message p-3 rounded-xl max-w-xs md:max-w-md shadow-lg`;
+            bubble.innerHTML = text;
+
+            wrapper.appendChild(bubble);
+            chatHistory.appendChild(wrapper);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+       async function sendMessage() {
+    const query = userInput.value.trim();
+    if (!query) return;
+
+    addMessage("user", query);
+    userInput.value = "";
+
+    const aiBubble = document.createElement("div");
+    aiBubble.className = "ai-message p-3 rounded-xl max-w-xs md:max-w-md shadow-lg";
+    aiBubble.innerHTML = "<p>Thinking...</p>";
+
+    const wrap = document.createElement("div");
+    wrap.className = "flex justify-start";
+    wrap.appendChild(aiBubble);
+    chatHistory.appendChild(wrap);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    try {
+        const response = await fetch("http://localhost:3000/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: query })
+        });
+
+        const data = await response.json();
+        const reply = data.reply || "No response from AI";
+
+        aiBubble.innerHTML = reply.replace(/\n/g, "<br>");
+
+    } catch (err) {
+        aiBubble.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+    }
+}
+
+    </script>
+</body>
+</html>

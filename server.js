@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const API_KEY = "AIzaSyAjkUFD7L8gmYB2CjvSzlUzzkHKTiQBv6Q";
+const API_KEY = "AIzaSyBRmxXb69Odu9grV4Woh0709VTlYCFXHZ4";
 
 app.get("/", (req, res) => {
   res.send("Server is running!");
@@ -48,6 +48,7 @@ app.post("/chat", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
 
 
